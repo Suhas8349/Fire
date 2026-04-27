@@ -13,21 +13,9 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build & Test') {
             steps {
-                sh 'mvn clean compile'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-        }
-
-        stage('Package') {
-            steps {
-                sh 'mvn package'
+                sh 'mvn clean test package'
             }
         }
 
@@ -44,6 +32,9 @@ pipeline {
         }
         failure {
             echo 'Build Failed!'
+        }
+        always {
+            archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
         }
     }
 }
