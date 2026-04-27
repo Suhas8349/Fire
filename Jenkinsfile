@@ -1,10 +1,11 @@
 pipeline {
-    agent any  // Use any available agent
+    agent any
 
     tools {
-        gradle 'Gradle'  // Ensure this matches the name configured in Jenkins
         jdk 'JDK'
+        maven 'Maven'
     }
+
     stages {
         stage('Checkout') {
             steps {
@@ -14,29 +15,35 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'gradle build'  // Run Gradle build
+                sh 'mvn clean compile'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'gradle test'  // Run unit tests
+                sh 'mvn test'
             }
         }
-        stage('Run Application') {
+
+        stage('Package') {
             steps {
-                // Start the JAR application
-                sh 'gradle run'
+                sh 'mvn package'
+            }
+        }
+
+        stage('Run App') {
+            steps {
+                sh 'java -jar target/Firefox-1.0-SNAPSHOT.jar'
             }
         }
     }
 
     post {
         success {
-            echo 'Build and deployment successful!'
+            echo 'Build Successful!'
         }
         failure {
-            echo 'Build failed!'
+            echo 'Build Failed!'
         }
     }
 }
